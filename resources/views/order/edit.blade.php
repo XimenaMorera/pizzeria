@@ -18,7 +18,7 @@
            </div>
 
             <div class="mb-3">
-                <label for="name" class="form-label">Client</label>
+                <label for="name" class="form-label">Cliente</label>
                 <select class="form-select" id="client" name="client" required>
                 <option selected disabled value="">Choose One...</option>
                 @foreach ($users as $user )
@@ -32,7 +32,7 @@
             </div>
 
             <div class="mb-3">
-                <label for="name" class="form-label">Branch</label>
+                <label for="name" class="form-label">Rama</label>
                 <select class="form-select" id="branch" name="branch" required>
                 <option selected disabled value="">Choose One...</option>
                 @foreach ($branches as $branch )
