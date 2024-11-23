@@ -3,62 +3,70 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\PizzaSize;
 use Illuminate\Http\Request;
 
-class Pizza_SizesController extends Controller
+class PizzaSizesController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    // Listar todos los tamaños de pizza
     public function index()
     {
-        //
+        return response()->json(PizzaSize::all(), 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    // Crear un nuevo tamaño de pizza
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'pizza_id' => 'required|exists:pizzas,id',
+            'size' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+        ]);
+
+        $pizzaSize = PizzaSize::create($request->all());
+        return response()->json($pizzaSize, 201);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    // Mostrar detalles de un tamaño específico
     public function show($id)
     {
-        //
+        $pizzaSize = PizzaSize::with('pizza')->find($id);
+
+        if (!$pizzaSize) {
+            return response()->json(['message' => 'Tamaño de pizza no encontrado'], 404);
+        }
+
+        return response()->json($pizzaSize, 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    // Actualizar un tamaño existente
     public function update(Request $request, $id)
     {
-        //
+        $pizzaSize = PizzaSize::find($id);
+
+        if (!$pizzaSize) {
+            return response()->json(['message' => 'Tamaño de pizza no encontrado'], 404);
+        }
+
+        $request->validate([
+            'size' => 'sometimes|required|string|max:255',
+            'price' => 'sometimes|required|numeric|min:0',
+        ]);
+
+        $pizzaSize->update($request->all());
+        return response()->json($pizzaSize, 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    // Eliminar un tamaño de pizza
     public function destroy($id)
     {
-        //
+        $pizzaSize = PizzaSize::find($id);
+
+        if (!$pizzaSize) {
+            return response()->json(['message' => 'Tamaño de pizza no encontrado'], 404);
+        }
+
+        $pizzaSize->delete();
+        return response()->json(['message' => 'Tamaño de pizza eliminado'], 200);
     }
 }
