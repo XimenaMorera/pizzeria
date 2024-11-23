@@ -3,62 +3,67 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Ingredient;
 use Illuminate\Http\Request;
 
 class IngredientController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    // Listar todos los ingredientes
     public function index()
     {
-        //
+        return response()->json(Ingredient::all(), 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    // Crear un nuevo ingrediente
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255|unique:ingredients,name',
+        ]);
+
+        $ingredient = Ingredient::create($request->all());
+        return response()->json($ingredient, 201);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    // Mostrar un ingrediente específico
     public function show($id)
     {
-        //
+        $ingredient = Ingredient::find($id);
+
+        if (!$ingredient) {
+            return response()->json(['message' => 'Ingrediente no encontrado'], 404);
+        }
+
+        return response()->json($ingredient, 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    // Actualizar un ingrediente existente
     public function update(Request $request, $id)
     {
-        //
+        $ingredient = Ingredient::find($id);
+
+        if (!$ingredient) {
+            return response()->json(['message' => 'Ingrediente no encontrado'], 404);
+        }
+
+        $request->validate([
+            'name' => "sometimes|required|string|max:255|unique:ingredients,name,$id",
+        ]);
+
+        $ingredient->update($request->all());
+        return response()->json($ingredient, 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    // Eliminar un ingrediente
     public function destroy($id)
     {
-        //
+        $ingredient = Ingredient::find($id);
+
+        if (!$ingredient) {
+            return response()->json(['message' => 'Ingrediente no encontrado'], 404);
+        }
+
+        $ingredient->delete();
+        return response()->json(['message' => 'Ingrediente eliminado'], 200);
     }
 }
