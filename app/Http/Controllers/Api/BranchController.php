@@ -3,62 +3,69 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Branch;
 use Illuminate\Http\Request;
 
 class BranchController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    // Listar todas las sucursales
     public function index()
     {
-        //
+        return response()->json(Branch::all(), 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    // Crear una nueva sucursal
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+        ]);
+
+        $branch = Branch::create($request->all());
+        return response()->json($branch, 201);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    // Mostrar una sucursal específica
     public function show($id)
     {
-        //
+        $branch = Branch::find($id);
+
+        if (!$branch) {
+            return response()->json(['message' => 'Sucursal no encontrada'], 404);
+        }
+
+        return response()->json($branch, 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    // Actualizar una sucursal existente
     public function update(Request $request, $id)
     {
-        //
+        $branch = Branch::find($id);
+
+        if (!$branch) {
+            return response()->json(['message' => 'Sucursal no encontrada'], 404);
+        }
+
+        $request->validate([
+            'name' => 'sometimes|required|string|max:255',
+            'address' => 'sometimes|required|string|max:255',
+        ]);
+
+        $branch->update($request->all());
+        return response()->json($branch, 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    // Eliminar una sucursal
     public function destroy($id)
     {
-        //
+        $branch = Branch::find($id);
+
+        if (!$branch) {
+            return response()->json(['message' => 'Sucursal no encontrada'], 404);
+        }
+
+        $branch->delete();
+        return response()->json(['message' => 'Sucursal eliminada'], 200);
     }
 }
